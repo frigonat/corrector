@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AppConfig</name>
+    </assembly>
+    <members>
+        <member name="M:AppConfigClassLibrary.Seccion.#ctor(System.String)">
+            <summary>
+            Devuelve una instancia del objeto inicializado con el valor recibido como parámetro.-
+            </summary>
+            <param name="NombreDeSeccion"></param>
+        </member>
+        <member name="M:AppConfigClassLibrary.Seccion.AgregarLinea(System.String,System.String)">
+            <summary>
+            Agrega una nueva línea a la sección, recibiendo sus componentes (clave y valor) como parámetros.-
+            </summary>
+            <param name="Clave">La Clave de la nueva línea que se desea agregar.-</param>
+            <param name="Valor">El Valor de la nueva línea que se desea agregar.-</param>
+        </member>
+        <member name="M:AppConfigClassLibrary.Seccion.EliminarLinea(System.String)">
+            <summary>
+            Elimina la línea cuya clave se pasa como parámetro.-
+            </summary>
+            <param name="Clave">La Clave de la línea que se desea eliminar.-</param>
+        </member>
+        <member name="M:AppConfigClassLibrary.Seccion.DevolverLineas">
+            <summary>
+            Devuelve una lista con las lineas del objeto SECCION.-
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:AppConfigClassLibrary.Seccion.Nombre">
+            <summary>
+            Obtiene el nombre de la sección.-
+            </summary>
+        </member>
+        <member name="P:AppConfigClassLibrary.Seccion.CantidadDeLineas">
+            <summary>
+            Obtiene la cantidad de líneas de la sección.-
+            </summary>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.#ctor">
+            <summary>
+            Devuelve una nueva instancia del objeto pero totalmente vacía para que sus componentes se agreguen de acuerdo a peticiones del usuario.-
+            </summary>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.#ctor(AppConfigClassLibrary.AppConfig.Formatos)">
+            <summary>
+            Devuelve una nueva instancia del objeto, con el formato indicado, pero totalmente vacía para que sus componentes se agreguen de acuerdo a peticiones del usuario.-
+            </summary>
+            <param name="Formato">Formato en el que se grabará el archivo de persistencia.-</param>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.#ctor(System.String,System.String,AppConfigClassLibrary.AppConfig.Formatos)">
+            <summary>
+            Devuelve una instancia del objeto AppConfig inicializado con los datos del archivo indicado como parámetro.-
+            </summary>
+            <param name="Directorio"></param>
+            <param name="Archivo"></param>
+            <param name="Formato"></param>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.AgregarSeccion(System.String)">
+            <summary>
+            Agrega una nueva sección a la lista existente en el objeto AppConfig.-
+            </summary>
+            <param name="NombreSeccion">Nombre de la sección que se desea agregar.-</param>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.EliminarSeccion(System.String)">
+            <summary>
+            Elimina una sección de la lista del objeto AppConfig.-
+            </summary>
+            <param name="NombreDeSeccion">Nombre de la sección que se desea eliminar.-</param>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.EliminarSeccion(System.Int32)">
+            <summary>
+            Elimina una sección de la lista del objeto AppConfig.-
+            </summary>
+            <param name="IndiceDeSeccion">Indice (con base cero) de la sección que se desea eliminar.-</param>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.eliminarSeccion(System.Int32)">
+            <summary>
+            Elimina la sección cuyo índice se recibe como parámetro.-
+            </summary>
+            <param name="Indice">Indice de la sección que se desea eliminar.-</param>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.DevolverSecciones">
+            <summary>
+            Devuelve una lista con los nombres de las secciones existentes en el objeto AppConfig.-
+            </summary>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.RecuperarINI">
+            <summary>
+            Recupera los datos para inicializar el objeto AppConfig desde un archivo INI.-
+            </summary>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.AgregarLinea(System.String,System.String,System.String)">
+            <summary>
+            Agrega una nueva línea al objeto AppConfig, bajo la sección cuyo nombre se recibe como parámetro.
+            </summary>
+            <param name="Seccion">Sección en la que se debe agregar la línea formada por Clave y Valor.-</param>
+            <param name="Clave">Clave de valor que se guardará.-</param>
+            <param name="Valor">Valor que deberá almacenarse en la línea.-</param>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.EliminarLinea(System.String,System.String)">
+            <summary>
+            Elimina del objeto AppConfig la línea cuya Clave se recibe como parámetro.- 
+            </summary>
+            <param name="NombreDeSeccion">Nombre de la sección donde está la línea a eliminar.-</param>
+            <param name="ClaveParaEliminar">Clave de la línea a eliminar.-</param>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.DevolverValor(System.String,System.String)">
+            <summary>
+            Devuelve el valor almacenado en una clave dentro de una determinada sección.-
+            </summary>
+            <param name="NombreSeccion">Sección donde se encuentra la Clave cuyo Valor se desea obtener.-</param>
+            <param name="Clave">Clave cuyo valor se desea obtener.-</param>
+            <returns></returns>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.GuardarValor(System.String,System.String,System.String)">
+            <summary>
+            Guarda el Valor recibido en la Sección y Clave indicados.-
+            </summary>
+            <param name="NombreDeSeccion">Nombre de la sección en la que se debe guardar el nuevo valor.-</param>
+            <param name="Clave">Clave en la que se guardará el valor recibido.-</param>
+            <param name="NuevoValor">Nuevo valor a guardar.-</param>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.Grabar">
+            <summary>
+            Persiste el objeto AppConfig en la ruta y archivo determinados.-
+            </summary>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.GrabarINI">
+            <summary>
+            Graba el contenido del objeto AppConfig en un archivo TXT con la estructura de un INI.-
+            </summary>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.AgregarExtension">
+            <summary>
+            Agrega al nombre de persistencia del archivo la extensión correspondiente según el formato, si es que la misma no existe.-
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:AppConfigClassLibrary.AppConfig.DevolverLineas(System.String)">
+            <summary>
+            Devuelve una lista con todas las líneas que contiene la sección cuyo nombre se recibe como parámetro.-
+            </summary>
+            <param name="NombreSeccion">Nombre de la sección cuyas líneas se desean recuperar.-</param>
+            <returns></returns>
+        </member>
+        <member name="P:AppConfigClassLibrary.AppConfig.ArchivoDePersistencia">
+            <summary>
+            Obtiene/establece el nombre del archivo en el que se almacenarán los datos de configuración.-
+            </summary>
+        </member>
+        <member name="P:AppConfigClassLibrary.AppConfig.DirectorioDePersistencia">
+            <summary>
+            Obtiene/establece la ruta en la que residirá el archivo que almacenará los datos.-
+            </summary>
+        </member>
+        <member name="P:AppConfigClassLibrary.AppConfig.FormatoDePersistencia">
+            <summary>
+            Obtiene/establece el formato en el que se deberá persistir el archivo en disco.-
+            </summary>
+        </member>
+        <member name="P:AppConfigClassLibrary.AppConfig.ModificacionesPendientes">
+            <summary>
+            Obtiene un valor que indica si existen en el objeto modificaciones pendientes de grabar.-
+            </summary>
+        </member>
+        <member name="T:AppConfigClassLibrary.AppConfig.Formatos">
+            <summary>
+            Especifica el formato en el que se almancenarán los archivos.-
+            </summary>
+        </member>
+        <member name="F:AppConfigClassLibrary.AppConfig.Formatos.ArchivoINI">
+            <summary>
+            Especifica que el archivo se guarda como un TXT con estructura de INI.-
+            </summary>
+        </member>
+        <member name="F:AppConfigClassLibrary.AppConfig.Formatos.ArchivoBinario">
+            <summary>
+            Especifica que el archivo se guarda como un TXT con formato Binario.-
+            </summary>
+        </member>
+        <member name="F:AppConfigClassLibrary.AppConfig.Formatos.ArchivoXML">
+            <summary>
+            Especifica que el archivo se guarda como un XML.-
+            </summary>
+        </member>
+        <member name="M:AppConfigClassLibrary.Linea.#ctor(System.String,System.String)">
+            <summary>
+            Devuelve una instancia del objeto inicializado con los parámetros recibidos.-
+            </summary>
+            <param name="NuevaClave">Clave para la nueva línea.-</param>
+            <param name="NuevoValor">Valor par la nueva línea.-</param>
+        </member>
+        <member name="P:AppConfigClassLibrary.Linea.Clave">
+            <summary>
+            Obtiene el componente CLAVE de la línea.-
+            </summary>
+        </member>
+        <member name="P:AppConfigClassLibrary.Linea.Valor">
+            <summary>
+            Obtiene/establece el componente VALOR de la línea.-
+            </summary>
+        </member>
+    </members>
+</doc>
