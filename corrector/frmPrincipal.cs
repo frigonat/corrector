@@ -21,6 +21,10 @@ namespace corrector
         private string rutaConfig;
         private string archivoConfig;
         private bool noConfirmarSalida;
+        private bool cargaEnProgreso;
+
+        private const string ST_JUDE = "St. Jude";
+        private const string PANALAB = "PANALAB";
 
         public frmPrincipal()
         {
@@ -56,10 +60,18 @@ namespace corrector
             rutaConfig = Path.GetDirectoryName(myAssembly.Location);
             archivoConfig = "corrector.ini";
 
+            cargaEnProgreso = true;
+            cmbClientes.Items.Add(PANALAB);
+            cmbClientes.Items.Add(ST_JUDE);
+            cargaEnProgreso = false;
+            cmbClientes.SelectedIndex = 0;
+
             //Se configura el tamaño y posición del formulario.-
             setFormSizeAndLocation();
             pedidoActual = null;
             configurarGUI();
+
+            configurarCliente();
         }
 
         private void frmPrincipal_LocationChanged(object sender, EventArgs e)
@@ -78,7 +90,7 @@ namespace corrector
 
             try
             {
-                pedidoActual = new Pedido(pedidoBuscado);
+                pedidoActual = new Pedido(pedidoBuscado, cmbClientes.Text);
                 mostrarPedidoActual();
             }
             catch (Exception ex)
@@ -166,6 +178,8 @@ namespace corrector
 
             txtNumeroDePedido.Text = "";
             txtNumeroDePedido.Focus();
+
+            cmbClientes.SelectedIndex = 0;  
         }
 
         /// <summary>
@@ -194,7 +208,7 @@ namespace corrector
                 this.Size = new Size(System.Convert.ToInt32(Width), System.Convert.ToInt32(Height));
                 this.Location = new Point(System.Convert.ToInt32(X), System.Convert.ToInt32(Y));
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //do nothing.-
             }
@@ -263,5 +277,34 @@ namespace corrector
             tslFormSizeAndLocation.Text += " | Location: " + this.Location.X.ToString() + ", " + this.Location.Y.ToString();
         }
 
+        private void cmbClientes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            configurarCliente(); 
+        }
+
+        private void configurarCliente()
+        {
+            if (cargaEnProgreso == false)
+            {
+                if (cmbClientes.Text == ST_JUDE)
+                {
+                    lblAlmacen.Text = "wmwhse1";
+                    lblPropietario.Text = "ST JUDE";
+                    lblBaseDeDatos.Text = "LPFAD";
+                }
+                else
+                {
+                    lblAlmacen.Text = "wmwhse2";
+                    lblPropietario.Text = "PANALAB";
+                    lblBaseDeDatos.Text = "LPFAD";
+                }
+            }
+        }
+
+
+        private void txtNumeroDePedido_Enter(object sender, EventArgs e)
+        {
+            txtNumeroDePedido.SelectAll(); 
+        }
     }
 }

@@ -137,7 +137,7 @@ namespace corrector
         /// <exception cref="IdNoValidoException">Excepción que se arroja cuando se detecta que el id recibido no es válido.</exception>
         /// <exception cref="PedidoNoEncontradoException"></exception>
         /// <exception cref="Exception">Excepción genérica que ocurre si no puede recuperarse el pedido.-</exception>
-        public Pedido(string numeroBuscado)
+        public Pedido(string numeroBuscado, string propietarioBuscado)
         {
             string iSQL = "*Ninguna";
             string mensaje = "";
@@ -145,17 +145,27 @@ namespace corrector
             Connection cn;
 
             //Valida que el id recibido sea válido.-
-            if (numeroBuscado.Length <=0 )
-                throw new IdNoValidoException("El id de artículo informado no es válido");
+            if (numeroBuscado.Length <= 0)
+                throw new IdNoValidoException("El número de pedido informado no es válido");
+
+            if (propietarioBuscado == "St. Jude")
+            {
+                iSQL = "SELECT PAP_EXTERNORDERKEY NroPedido, PAP_STORERKEY as Propietario, ADDWHO as UsuarioDeAlta, ADDDATE as FechaDeAlta, NroCorrida as NroCorrida,  FechaInterfaz as FechaInterfaz, PAP_PROCESS as Estado, PAP_DLINENO as NroLinea, PAP_DSKU as Articulo, PAP_DOPENQTY as Cantidad, PAP_DUOM as UnidadDeMedida, PAP_DLOTTABLE02 as UDF2, PAP_DLOTTABLE03 as UDF3, PAP_DLOTTABLE05 as UDF5 ";
+                iSQL += "FROM [INTERFACES_LPFAD].[dbo].[125_ConfirmacionDePicking] ";
+                iSQL += "WHERE PAP_WHSEID = 'wmwhse1' AND PAP_STORERKEY = 'ST JUDE' AND PAP_EXTERNORDERKEY = '" + numeroBuscado + "'";
+            }
+            else
+            {
+                iSQL = "SELECT OrdenExterna1 as NroPedido, Propietario as Propietario, UsuarioIngreso as UsuarioDeAlta, FechaIngreso as FechaDeAlta, null as NroCorrida, null as FechaInterfaz, Estado as Estado, null as NroLinea, null as Articulo, null as Cantidad, null as UnidadDeMedida, null as UDF2, null as UDF3, null as UDF5 ";
+                iSQL += "FROM LPFAD.dbo.AND_CONFIRMACIONOPERACIONES ";
+                iSQL += "WHERE PROPIETARIO LIKE '%PANALAB%' AND ORDENEXTERNA1 = '" + numeroBuscado + "'";
+            }
 
             try
             {
                 cn = new Connection();
                 cn.ConnectionStringBuilder();
                 cn.Open();
-
-                iSQL = "SELECT * FROM [INTERFACES_LPFAD].[dbo].[125_ConfirmacionDePicking] ";
-                iSQL += "WHERE PAP_WHSEID = 'wmwhse1' AND PAP_STORERKEY = 'ST JUDE' AND PAP_EXTERNORDERKEY = '" + numeroBuscado + "'";
                 pedidoBuscado = cn.ExecuteQuery(iSQL);
                 cn.Close();
             }
@@ -180,10 +190,10 @@ namespace corrector
 
             if (pedidoBuscado.Rows.Count != 0)
             {
-                this.numero = pedidoBuscado.Rows[0].Field<string>("PAP_EXTERNORDERKEY");
-                this.propietario = pedidoBuscado.Rows[0].Field<string>("PAP_STORERKEY");
-                this.usuarioDeAlta = pedidoBuscado.Rows[0].Field<string>("ADDWHO");
-                this.fechaDeAlta = pedidoBuscado.Rows[0].Field<DateTime>("ADDDATE");
+                this.numero = pedidoBuscado.Rows[0].Field<string>("NroPedido");
+                this.propietario = pedidoBuscado.Rows[0].Field<string>("Propietario");
+                this.usuarioDeAlta = pedidoBuscado.Rows[0].Field<string>("UsuarioDeAlta");
+                this.fechaDeAlta = pedidoBuscado.Rows[0].Field<DateTime>("FechaDeAlta");
 
                 if (pedidoBuscado.Rows[0]["NroCorrida"] is DBNull)
                 {
@@ -197,31 +207,34 @@ namespace corrector
                 }
 
 
-                EstadosDePedido estadoActual;
-                if (Enum.TryParse(pedidoBuscado.Rows[0].Field<int>("PAP_PROCESS").ToString(), out estadoActual))
-                {
-                    if (Enum.IsDefined(typeof(EstadosDePedido), estadoActual))
-                    {
-                        this.estado = estadoActual;
-                    }
-                    else
-                    {
-                        mensaje = "No se puede determinar el estado del pedido " + this.Numero;
-                        Bitacora.AgregarEntrada(mensaje, TiposDeEntrada.Error, objetoDeNegocio, 0, nombreBitacora);
-                        throw new PedidoNoValidoException(mensaje);
-                    }
-                }
+                //EstadosDePedido estadoActual;
+                //if (Enum.TryParse(pedidoBuscado.Rows[0].Field<int>("PAP_PROCESS").ToString(), out estadoActual))
+                //{
+                //    if (Enum.IsDefined(typeof(EstadosDePedido), estadoActual))
+                //    {
+                //        this.estado = estadoActual;
+                //    }
+                //    else
+                //    {
+                //        mensaje = "No se puede determinar el estado del pedido " + this.Numero;
+                //        Bitacora.AgregarEntrada(mensaje, TiposDeEntrada.Error, objetoDeNegocio, 0, nombreBitacora);
+                //        throw new PedidoNoValidoException(mensaje);
+                //    }
+                //}
 
                 //Creación de las líneas.-
                 this.lineas = new List<LineaDePedido>();
-                foreach (DataRow dr in pedidoBuscado.Rows)
+                if (propietarioBuscado == "St. Jude")
                 {
-                    int xLinea = System.Convert.ToInt32(dr.Field<string>("PAP_DLINENO"));
-                    string xSKU = dr.Field<string>("PAP_DSKU");
-                    decimal xCantidad = dr.Field<decimal>("PAP_DOPENQTY");
+                    foreach (DataRow dr in pedidoBuscado.Rows)
+                    {
+                        int xLinea = System.Convert.ToInt32(dr.Field<string>("NroLinea"));
+                        string xSKU = dr.Field<string>("Articulo");
+                        decimal xCantidad = dr.Field<decimal>("Cantidad");
 
-                    LineaDePedido nuevaLinea = new LineaDePedido(xLinea, xSKU, xCantidad, dr.Field<string>("PAP_DUOM"), dr.Field<string>("PAP_DLOTTABLE02"), dr.Field<string>("PAP_DLOTTABLE03"), dr.Field<DateTime>("PAP_DLOTTABLE05"));
-                    this.lineas.Add(nuevaLinea);
+                        LineaDePedido nuevaLinea = new LineaDePedido(xLinea, xSKU, xCantidad, dr.Field<string>("UnidadDeMedida"), dr.Field<string>("UDF2"), dr.Field<string>("UDF3"), dr.Field<DateTime>("UDF5"));
+                        this.lineas.Add(nuevaLinea);
+                    }
                 }
             }
             else
@@ -249,18 +262,31 @@ namespace corrector
             string iSQL = "";
             string mensaje = "";
 
-            //Se arma la instrucción SQL a ejecutar.-
-            iSQL = "update [INTERFACES_LPFAD].[dbo].[125_ConfirmacionDePicking] ";
-            iSQL += "set PAP_PROCESS = 9, NroCorrida = NULL, FechaInterfaz = '1900-01-01 0:00:00' ";
-            iSQL += "where PAP_EXTERNORDERKEY = '" + this.Numero + "' ";
-            iSQL += "and PAP_WHSEID = 'wmwhse1' ";
-            iSQL += "and PAP_STORERKEY = 'ST JUDE'";
+            if (this.propietario == "ST JUDE")
+            {
+                //Se arma la instrucción SQL a ejecutar.-
+                iSQL = "update [INTERFACES_LPFAD].[dbo].[125_ConfirmacionDePicking] ";
+                iSQL += "set PAP_PROCESS = 9, NroCorrida = NULL, FechaInterfaz = '1900-01-01 0:00:00' ";
+                iSQL += "where PAP_EXTERNORDERKEY = '" + this.Numero + "' ";
+                iSQL += "and PAP_WHSEID = 'wmwhse1' ";
+                iSQL += "and PAP_STORERKEY = 'ST JUDE'";
+            }
+            else
+            {
+                iSQL = "UPDATE LPFAD.dbo.AND_CONFIRMACIONOPERACIONES ";
+                iSQL += "SET Estado = 0 ";
+                iSQL += "WHERE OrdenExterna1  = '" + this.Numero + "' ";
+                iSQL += "AND propietario LIKE '%PANALAB%'";
+            }
 
             try
             {
                 liberar(iSQL);
-                liberarSeries();
-                this.nroCorrida = "";
+
+                if (this.propietario == "ST JUDE")
+                    liberarSeries();
+                
+                    this.nroCorrida = "";
                 this.fechaCorrida = new DateTime(0);
                 this.estado = EstadosDePedido.Pendiente;
             }
@@ -317,7 +343,7 @@ namespace corrector
         /// <summary>
         /// Ejecuta la instrucción SQL recibida para liberar tanto la cabecera/líneas del pedido y/o las series del mismo.-
         /// </summary>
-        /// <param name="iSQL"></param>
+        /// <param name="iSQL">Sentencia SQL para ejecutar.-</param>
         private void liberar(string iSQL)
         {
             Connection cn;
@@ -333,6 +359,8 @@ namespace corrector
             }
             catch (Exception ex)
             {
+                Exception exe = ex;
+
                 //Se anotan las excepciones de error en la bitácora.-
                 mensaje = "No se ha podido actualizar la base de datos. Mensajes posteriores pueden contener mayor información.-";
                 Bitacora.AgregarEntrada(mensaje, TiposDeEntrada.Error, objetoDeNegocio, 0, nombreBitacora);
@@ -347,7 +375,7 @@ namespace corrector
                 }
 
                 //Se arroja la excepción para que la procese el método llamador.-
-                throw ex;
+                throw exe;
             }
         }
 
